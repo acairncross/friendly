@@ -1,0 +1,9 @@
+Friendly Vote
+=============
+
+Friendly Vote is a web application for creating polls online. Its features
+include being able to ensure each voter only gets one vote (via unique voting
+codes), multiple voting systems (alternate vote, first past the post etc.) and
+ease of use.
+
+It is currently under development.
