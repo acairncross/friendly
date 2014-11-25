@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friendly/vote.css') }}" />
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/lib/jquery-ui-1.11.2.custom/jquery-ui.min.js') }}"></script>
+
+<script>
+    $(function() {
+
+        $(".sortable").each(function() {
+            var $this = $(this);
+            var $sibling = ($this.hasClass("included")) ? $this.next() : $this.prev();
+            $(this).sortable({
+                connectWith: $sibling
+            });
+        });
+
+        $("#submit").on("click", function() {
+            
+            var polls = {};
+            $(".poll").each(function() {
+                // process stuff
+            });
+            
+            $.post("{{ url_for('vote', uvc='') }}", {
+                dataType: "json",
+                type: "POST",
+            });
+        });
+
+    });
+</script>
+{% endblock %}
+
+{% block title %}Vote{% endblock %}
+
+{% block content %}
+<input id="uvc" type="hidden" value="{{ uvc }}" />
+{% for poll in pc.polls %}
+    <div class="poll">
+        <div class="question">
+            <h2>{{ poll.question }}</h2>
+        </div>
+        <div class="choices">
+            <ul class="sortable included">
+            </ul>
+            <ul class="sortable excluded">
+            {% for choice in poll.choices %}
+                <li>{{ choice.text }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endfor %}
+<button id="submit">Submit</button>
+{% endblock %}

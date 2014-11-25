@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+Enter your Unique Voting Code:
+<form method="POST">
+    <input name="uvc" maxlength="16" />
+    <input type="submit" />
+</form>
+{% endblock %}

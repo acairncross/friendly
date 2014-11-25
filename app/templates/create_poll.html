@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script>
+    function createNewPoll() {
+        $.get("{{ url_for('static', filename='templates/poll_template.mustache') }}", function(template) {
+            var pollNumContainer = document.getElementById('numPolls');
+            var pollNum = pollNumContainer.value;
+
+            var rendered = Mustache.render(template, {pollNum: pollNum});
+
+            $("#polls").append(rendered);
+
+            attachCreateNewChoice(pollNum);
+
+            pollNumContainer.value++;
+        });
+    }
+
+    function createNewChoice(pollNum) {
+        $.get("{{ url_for('static', filename='templates/choice_template.mustache') }}", function(template) {
+            var rendered = Mustache.render(template, {pollNum: pollNum});
+
+            $("#poll" + pollNum).append(rendered);
+        });
+    }
+
+    function attachCreateNewChoice(pollNum) {
+        $("#add_choice" + pollNum).on("click", function() {
+            createNewChoice(pollNum);
+        });
+    }
+
+    $(function() {
+        $("#startDatetime").datetimepicker();
+        $("#endDatetime").datetimepicker();
+        createNewPoll();
+
+        $("#addPoll").on("click", function(e) {
+            createNewPoll();
+        });
+    });
+</script>
+{% endblock %}
+
+{% block title %}Create Poll{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <input type="hidden" id="numPolls" name="num_polls" value="0" />
+    No. votes: <input id="numVotes" name="num_votes" /><br />
+    Start: <input id="startDatetime" type="datetime" name="start" /><br />
+    End: <input id="endDatetime" type="datetime" name="end" /><br />
+    <button type="button" id="addPoll">Add poll</button><br />
+
+    <div id="polls"></div>
+
+    <input type="submit" value="Submit" /><br />
+</form>
+{% endblock %}
