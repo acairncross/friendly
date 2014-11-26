@@ -4,41 +4,76 @@
 <script>
     function createNewPoll() {
         $.get("{{ url_for('static', filename='templates/poll_template.mustache') }}", function(template) {
-            var pollNumContainer = document.getElementById('numPolls');
-            var pollNum = pollNumContainer.value;
+
+            var pollNumContainer = document.getElementById("numPolls");
+            var pollNum = parseInt(pollNumContainer.value);
 
             var rendered = Mustache.render(template, {pollNum: pollNum});
 
             $("#polls").append(rendered);
 
-            attachCreateNewChoice(pollNum);
+            $(".addChoice").eq(pollNum).on("click", function() {
+                createNewChoice(pollNum);
+            });
 
             pollNumContainer.value++;
+
         });
     }
 
     function createNewChoice(pollNum) {
-        $.get("{{ url_for('static', filename='templates/choice_template.mustache') }}", function(template) {
-            var rendered = Mustache.render(template, {pollNum: pollNum});
+        var choice = $("<input class=\"choice\" /><br />");
+        $("#polls").children().eq(pollNum).append(choice);
+    }
 
-            $("#poll" + pollNum).append(rendered);
+    function submitForm() {
+        var data = compileForm();
+        $.ajax("{{ url_for('create_poll') }}", {
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function() { window.location.href = "{{ url_for('index') }}";},
+            type: "POST"
         });
     }
 
-    function attachCreateNewChoice(pollNum) {
-        $("#add_choice" + pollNum).on("click", function() {
-            createNewChoice(pollNum);
+    function compileForm() {
+
+        var numVotes = parseInt(document.getElementById("numVotes").value);
+        var start = document.getElementById("startDatetime").value;
+        var end = document.getElementById("endDatetime").value;
+
+        var allPolls = $(".poll").map(function() {
+            var $this = $(this);
+            var question = $this.find(".question").val();
+            var allChoices = $this.find(".choice").map(function() {
+                return this.value;
+            }).get();
+            var choices = $.grep(allChoices, function(elem) { return elem; });
+            return {question: question, choices: choices};
+        }).get();
+
+        var polls = $.grep(allPolls, function(elem) {
+            return elem.question && elem.choices.length;
         });
+
+        return $.extend({}, {polls: polls, numVotes: numVotes, start: start, end: end});
+
     }
 
     $(function() {
+
         $("#startDatetime").datetimepicker();
         $("#endDatetime").datetimepicker();
         createNewPoll();
 
-        $("#addPoll").on("click", function(e) {
+        $("#addPoll").on("click", function() {
             createNewPoll();
         });
+
+        $("#submit").on("click", function() {
+            submitForm();
+        });
+
     });
 </script>
 {% endblock %}
@@ -46,15 +81,13 @@
 {% block title %}Create Poll{% endblock %}
 
 {% block content %}
-<form method="POST">
-    <input type="hidden" id="numPolls" name="num_polls" value="0" />
-    No. votes: <input id="numVotes" name="num_votes" /><br />
-    Start: <input id="startDatetime" type="datetime" name="start" /><br />
-    End: <input id="endDatetime" type="datetime" name="end" /><br />
-    <button type="button" id="addPoll">Add poll</button><br />
+<input id="numPolls" type="hidden" value="0" />
+No. votes: <input id="numVotes" /><br />
+Start: <input id="startDatetime" type="datetime" /><br />
+End: <input id="endDatetime" type="datetime" /><br />
+<button type="button" id="addPoll">Add poll</button><br />
 
-    <div id="polls"></div>
+<div id="polls"></div>
 
-    <input type="submit" value="Submit" /><br />
-</form>
+<button id="submit">Submit</button>
 {% endblock %}

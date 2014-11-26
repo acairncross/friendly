@@ -27,7 +27,7 @@ class PollCollection(db.Model):
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
     author_id = db.Column(db.Integer, db.ForeignKey('user_account.id'))
-    polls = db.relationship('Poll', backref='collection')
+    polls = db.relationship('Poll', backref='collection', order_by='Poll.poll_num')
 
     def __repr__(self):
         return '<PollCollection %r>' % self.id
@@ -37,19 +37,25 @@ class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String)
     collection_id = db.Column(db.Integer, db.ForeignKey('poll_collection.id'))
-    choices = db.relationship('Choice', backref='poll')
+    poll_num = db.Column(db.Integer)
+    choices = db.relationship('Choice',
+                              backref='poll',
+                              order_by='Choice.choice_num')
 
     def __repr__(self):
         return '<Poll %r>' % self.id
+
 
 class Choice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String)
     poll_id = db.Column(db.Integer, db.ForeignKey('poll.id'))
+    choice_num = db.Column(db.Integer)
     votes = db.relationship('PollVoteChoice', backref='choice')
 
     def __repr__(self):
         return '<Choice %r>' % self.id
+
 
 class PollCollectionVote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,6 +66,7 @@ class PollCollectionVote(db.Model):
 
     def __repr__(self):
         return '<PollCollectionVote %r>' % self.id
+
 
 class PollVote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +79,7 @@ class PollVote(db.Model):
 
     def __repr__(self):
         return '<PollVote %r>' % self.id
+
 
 class PollVoteChoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -21,14 +21,22 @@
         $("#submit").on("click", function() {
             
             var polls = {};
-            $(".poll").each(function() {
-                // process stuff
+            $(".poll").each(function(i) {
+                var $this = $(this);
+                var question = $this.children(".question").text();
+
+                var choices = $this.find(".included").children().map(function() {
+                    return $(this).text();
+                }).get();
+
+                polls[question] = choices;
             });
-            
-            $.post("{{ url_for('vote', uvc='') }}", {
-                dataType: "json",
-                type: "POST",
-            });
+
+            console.log(polls);
+
+            $.post("{{ url_for('submit_vote') }}",
+                   polls,
+                   function(data) { console.log(data); });
         });
 
     });
@@ -41,9 +49,7 @@
 <input id="uvc" type="hidden" value="{{ uvc }}" />
 {% for poll in pc.polls %}
     <div class="poll">
-        <div class="question">
-            <h2>{{ poll.question }}</h2>
-        </div>
+        <h2 class="question">{{ poll.question }}</h2>
         <div class="choices">
             <ul class="sortable included">
             </ul>

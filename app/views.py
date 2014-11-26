@@ -1,4 +1,4 @@
-from flask import redirect, render_template, request, url_for
+from flask import redirect, render_template, request, url_for, make_response
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
 from app import app, db, lm
@@ -31,6 +31,12 @@ def vote(uvc=''):
     pc = PollCollection.query.get(pcv.collection_id)
 
     return render_template('vote.html', uvc=uvc, pc=pc)
+
+@app.route('/submit_vote', methods=['POST'])
+def submit_vote():
+    app.logger.debug('REQUEST')
+    return make_response('Hello')
+    return render_template('index.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -71,23 +77,15 @@ def create_poll():
     if request.method == 'GET':
         return render_template('create_poll.html')
     elif request.method == 'POST':
-        num_votes = int(request.form.get('num_votes'))
-        start = request.form.get('start')
-        end = request.form.get('end')
-        num_polls = int(request.form.get('num_polls'))
+        data = request.get_json()
 
-        poll_forms = dict()
+        polls = data.get('polls')
+        num_votes = data.get('numVotes')
+        start = data.get('start')
+        end = data.get('end')
 
-        for i in range(num_polls):
-            question = request.form.get('question' + str(i))
-            choices = request.form.getlist('choice' + str(i))
-            if question and choices:
-                poll_forms[i] = {'question': question, 'choices': choices}
+        num_polls = len(polls)
 
-        # Check if the poll has no questions
-        if not poll_forms:
-            pass
-            
         pc = PollCollection(start=utils.parseDatetime(start),
                             end=utils.parseDatetime(end),
                             author_id=current_user.id)
@@ -98,21 +96,23 @@ def create_poll():
         pcvs = [PollCollectionVote(uvc=utils.generate_uvc(),
                                    cast=False,
                                    collection_id=pc.id)
-                for n in range(num_votes)]
+                for i in range(num_votes)]
         db.session.add_all(pcvs)
         db.session.commit()
 
-        ps = {i: Poll(question=poll_forms[i]['question'],
-                      collection_id=pc.id)
-              for i in poll_forms}
-        db.session.add_all(ps.values())
+        ps = [Poll(question=poll['question'],
+                   collection_id=pc.id,
+                   poll_num=poll_num)
+              for poll_num,poll in enumerate(polls)]
+        db.session.add_all(ps)
         db.session.commit()
 
         cs = [Choice(text=choice,
-                     poll_id=ps[i].id)
-              for i in poll_forms
-              for choice in poll_forms[i]['choices']]
+                     poll_id=ps[poll_num].id,
+                     choice_num=choice_num)
+              for poll_num,poll in enumerate(polls)
+              for choice_num,choice in enumerate(poll['choices'])]
         db.session.add_all(cs)
         db.session.commit()
 
-        return render_template('create_poll.html')
+        return ('', 204)

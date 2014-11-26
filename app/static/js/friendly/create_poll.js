@@ -1,38 +1,41 @@
-function createNewPoll() {
-    $.get("{{ url_for('static', filename='templates/poll_template.mustache') }}", function(template) {
-        var pollNumContainer = document.getElementById('numPolls');
-        var pollNum = pollNumContainer.value;
+<script>
+    function createNewPoll() {
+        $.get("{{ url_for('static', filename='templates/poll_template.mustache') }}", function(template) {
 
-        var rendered = Mustache.render(template, {pollNum: pollNum});
+            var pollNumContainer = document.getElementById('numPolls');
+            var pollNum = pollNumContainer.value;
 
-        $("#polls").append(rendered);
+            var rendered = Mustache.render(template, {pollNum: pollNum});
 
-        attachCreateNewChoice(pollNum);
+            $("#polls").append(rendered);
 
-        pollNumContainer.value++;
-    });
-}
+            $("#add_choice" + pollNum).on("click", function() {
+                createNewChoice(pollNum);
+            });
 
-function createNewChoice(pollNum) {
-    $.get("{{ url_for('static', filename='templates/choice_template.mustache') }}", function(template) {
-        var rendered = Mustache.render(template, {pollNum: pollNum});
+            pollNumContainer.value++;
 
-        $("#poll" + pollNum).append(rendered);
-    });
-}
+        });
+    }
 
-function attachCreateNewChoice(pollNum) {
-    $("#add_choice" + pollNum).on("click", function() {
-        createNewChoice(pollNum);
-    });
-}
+    function createNewChoice(pollNum) {
+        $.get("{{ url_for('static', filename='templates/choice_template.mustache') }}", function(template) {
+            var rendered = Mustache.render(template, {pollNum: pollNum});
 
-$(function() {
-    $("#startDatetime").datetimepicker();
-    $("#endDatetime").datetimepicker();
-    createNewPoll();
+            $("#poll" + pollNum).append(rendered);
+        });
+    }
 
-    $("#addPoll").on("click", function(e) {
+    $(function() {
+
+        $("#startDatetime").datetimepicker();
+        $("#endDatetime").datetimepicker();
         createNewPoll();
+
+        $("#addPoll").on("click", function(e) {
+            createNewPoll();
+        });
+
     });
-});
+</script>
+
