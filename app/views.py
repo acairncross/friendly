@@ -2,7 +2,8 @@ from flask import redirect, render_template, request, url_for, make_response
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
 from app import app, db, lm
-from models import UserAccount, PollCollection, Poll, Choice, PollCollectionVote
+from models import (UserAccount, PollCollection, Poll, Choice, PollCollectionVote,
+    PollVote, PollVoteChoice)
 import utils
 
 @lm.user_loader
@@ -16,27 +17,61 @@ def index():
     elif request.method == 'POST':
         uvc = request.form.get('uvc')
         if uvc:
-            return redirect(url_for('vote', uvc=uvc))
+            return redirect(url_for('vote', uvc=uvc), code=307)
 
-@app.route('/vote/<uvc>', methods=['GET'])
-def vote(uvc=''):
-    pcv = PollCollectionVote.query.filter(
-        PollCollectionVote.uvc == uvc,
-        PollCollectionVote.cast == False
-    ).first()
+@app.route('/vote', methods=['GET', 'POST'])
+def vote():
+    if request.method == 'GET':
+        return render_remplate('index.html')
+    elif request.method == 'POST':
+        uvc = request.form.get('uvc')
 
-    if not pcv:
-        return redirect(url_for('index'))
+        pcv = PollCollectionVote.query.filter(
+            PollCollectionVote.uvc == uvc).first()
 
-    pc = PollCollection.query.get(pcv.collection_id)
+        if not pcv:
+            return redirect(url_for('vote'))
 
-    return render_template('vote.html', uvc=uvc, pc=pc)
+        pc = PollCollection.query.get(pcv.collection_id)
+        ps = pc.polls
+        for p in ps:
+            utils.shuffle(p.choices)
+
+        return render_template('vote.html', uvc=uvc, ps=ps)
 
 @app.route('/submit_vote', methods=['POST'])
 def submit_vote():
-    app.logger.debug('REQUEST')
-    return make_response('Hello')
-    return render_template('index.html')
+    data = request.get_json()
+    uvc = data.get('uvc')
+    choices = data.get('choices')
+    num_polls = len(choices)
+
+    pcv = PollCollectionVote.query.filter(
+        PollCollectionVote.uvc == uvc).first()
+
+    pc = PollCollection.query.get(pcv.collection_id)
+    ps = pc.polls
+
+    pvs = [PollVote(poll_id=p.id,
+                    pollcollvote_id=pcv.id)
+           for p in ps]
+    db.session.add_all(pvs)
+    db.session.commit()
+
+    css = [p.choices for p in ps]
+
+    pvcs = [PollVoteChoice(choice_id=css[poll_num][choice_num].id,
+                           preference=preference,
+                           pollvote_id=pvs[poll_num].id)
+            for poll_num in range(num_polls)
+            for preference,choice_num in enumerate(choices[poll_num])]
+    db.session.add_all(pvcs)
+    db.session.commit()
+
+    pcv.cast = True
+    db.session.commit()
+
+    return redirect(url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

@@ -18,3 +18,6 @@ def parseDatetime(dt):
 
 def generate_uvc():
     return ''.join([random.choice(string.ascii_uppercase) for i in range(10)])
+
+def shuffle(l):
+    random.shuffle(l)

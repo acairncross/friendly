@@ -8,6 +8,36 @@
 <script src="{{ url_for('static', filename='js/lib/jquery-ui-1.11.2.custom/jquery-ui.min.js') }}"></script>
 
 <script>
+    function submitForm() {
+        $.ajax("{{ url_for('submit_vote') }}", {
+            contentType: "application/json",
+            data: JSON.stringify(compileForm()),
+            success: function() { window.location.href = "{{ url_for('index') }}";},
+            type: "POST"
+        });
+    }
+
+    function compileForm() {
+        
+        var uvc = document.getElementById("uvc").value;
+
+        var choicesObjects = $(".poll").map(function() {
+            var $this = $(this);
+            var pollNum = parseInt($this.data("poll-num"));
+            var choices = $this.find(".included").children().map(function() {
+                return parseInt($(this).data("choice-num"));
+            }).get();
+            return {pollNum: pollNum, choices: choices};
+        }).get();
+
+        var choices = new Array(choicesObjects.length);
+        for (var i=0; i<choicesObjects.length; i++)
+            choices[i] = choicesObjects[i]["choices"];
+
+        return $.extend({}, {uvc: uvc, choices: choices});
+
+    }
+
     $(function() {
 
         $(".sortable").each(function() {
@@ -19,24 +49,7 @@
         });
 
         $("#submit").on("click", function() {
-            
-            var polls = {};
-            $(".poll").each(function(i) {
-                var $this = $(this);
-                var question = $this.children(".question").text();
-
-                var choices = $this.find(".included").children().map(function() {
-                    return $(this).text();
-                }).get();
-
-                polls[question] = choices;
-            });
-
-            console.log(polls);
-
-            $.post("{{ url_for('submit_vote') }}",
-                   polls,
-                   function(data) { console.log(data); });
+            submitForm();
         });
 
     });
@@ -47,15 +60,15 @@
 
 {% block content %}
 <input id="uvc" type="hidden" value="{{ uvc }}" />
-{% for poll in pc.polls %}
-    <div class="poll">
+{% for poll in ps %}
+    <div class="poll" data-poll-num="{{ poll.poll_num }}">
         <h2 class="question">{{ poll.question }}</h2>
         <div class="choices">
             <ul class="sortable included">
             </ul>
             <ul class="sortable excluded">
             {% for choice in poll.choices %}
-                <li>{{ choice.text }}</li>
+                <li data-choice-num="{{ choice.choice_num }}">{{ choice.text }}</li>
             {% endfor %}
             </ul>
         </div>

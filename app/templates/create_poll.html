@@ -27,10 +27,9 @@
     }
 
     function submitForm() {
-        var data = compileForm();
         $.ajax("{{ url_for('create_poll') }}", {
             contentType: "application/json",
-            data: JSON.stringify(data),
+            data: JSON.stringify(compileForm()),
             success: function() { window.location.href = "{{ url_for('index') }}";},
             type: "POST"
         });
