@@ -25,3 +25,7 @@ TODO:
 - Make accounts (passwords) secure
 - Make forms/submissions secure (CSRF prevention)
 - Styling
+- Documentation
+- Caching (database queries)
+- Tests
+- More admin features
