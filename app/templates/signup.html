@@ -4,8 +4,11 @@
 
 {% block content %}
 <form method="POST">
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
     Username:
-        <input name="username" /><br />
+        <input name="username" value="{{ username }}"/><br />
     Password:
         <input type="password" name="password" /><br />
         <input type="submit" value="Signup" />

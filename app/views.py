@@ -1,6 +1,9 @@
+from functools import partial
+
 from flask import redirect, render_template, request, url_for, make_response
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
+
 from app import app, db, lm
 from models import (UserAccount, PollCollection, Poll, Choice, PollCollectionVote,
     PollVote, PollVoteChoice)
@@ -78,11 +81,29 @@ def signup():
     if request.method == 'GET':
         return render_template('signup.html')
     if request.method == 'POST':
+        render = partial(render_template, 'signup.html')
+
         username = request.form.get('username')
+        if not username:
+            render(error='No username provided')
+
+        render_u = partial(render, username=username)
+
+        other_user = UserAccount.query.filter(
+            UserAccount.username==username).first()
+        if other_user:
+            return render_u(error='Username is already in use')
+
         password = request.form.get('password')
+        if not password:
+            return render_u(error='Password not provided')
+
         user = UserAccount(username=username, password=password)
         db.session.add(user)
         db.session.commit()
+
+        login_user(user)
+
         return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -90,11 +111,22 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
+        render = partial(render_template, 'login.html')
+
         username = request.form.get('username')
+        if not username:
+            return render(error='No username provided')
+
+        render_u = partial(render, username=username)
+
         user = UserAccount.query.filter(UserAccount.username==username).first()
+        if not user:
+            return render_u(error='Username does not exist')
+            
         password = request.form.get('password')
         if password != user.password:
-            return redirect(url_for('signup'))
+            return render_u(error='Username and password do not match')
+
         login_user(user)
         next = request.args.get('next')
         return redirect(next) if next else redirect(url_for('index'))
