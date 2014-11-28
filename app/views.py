@@ -96,7 +96,8 @@ def login():
         if password != user.password:
             return redirect(url_for('signup'))
         login_user(user)
-        return redirect(url_for('index'))
+        next = request.args.get('next')
+        return redirect(next) if next else redirect(url_for('index'))
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
