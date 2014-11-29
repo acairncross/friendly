@@ -3,8 +3,11 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
+{% if error %}
+    <p>{{ error }}</p>
+{% endif %}
 Enter your Unique Voting Code:
-<form method="POST">
+<form method="POST" action="{{ url_for('vote') }}">
     <input name="uvc" maxlength="16" />
     <input type="submit" />
 </form>

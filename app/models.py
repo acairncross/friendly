@@ -3,7 +3,8 @@ from app import db
 class UserAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String)
-    password = db.Column(db.String)
+    password_hash = db.Column(db.LargeBinary)
+    password_salt = db.Column(db.LargeBinary)
     poll_collections = db.relationship('PollCollection', backref='author')
 
     def __repr__(self):

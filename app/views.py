@@ -17,27 +17,39 @@ def load_user(id):
 def index():
     if request.method == 'GET':
         return render_template('index.html')
-    elif request.method == 'POST':
-        uvc = request.form.get('uvc')
-        if uvc:
-            return redirect(url_for('vote', uvc=uvc), code=307)
 
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
     if request.method == 'GET':
         return render_remplate('index.html')
     elif request.method == 'POST':
+        render = partial(render_template, 'index.html')
+
         uvc = request.form.get('uvc')
+
+        if not uvc:
+            return render(error='No UVC entered')
+
+        uvc = uvc.upper()
 
         pcv = PollCollectionVote.query.filter(
             PollCollectionVote.uvc == uvc).first()
 
         if not pcv:
-            return redirect(url_for('vote'))
+            return render(error='UVC does not exist')
 
         pc = PollCollection.query.get(pcv.collection_id)
+
+        # Check that the poll is currently open
+        now = utils.get_now()
+        if now < pc.start:
+            return render(error='Voting for this poll has not started yet')
+        elif pc.end < now:
+            return render(error='Voting for this poll has closed')
+
         ps = pc.polls
         for p in ps:
+            # Randomize the order of the choices (but not the polls)
             utils.shuffle(p.choices)
 
         return render_template('vote.html', uvc=uvc, ps=ps)
@@ -98,7 +110,17 @@ def signup():
         if not password:
             return render_u(error='Password not provided')
 
-        user = UserAccount(username=username, password=password)
+        try:
+            password = bytes(password)
+        except UnicodeEncodeError:
+            return render_u(error='Invalid characters used in password')
+
+        password_salt = utils.generate_salt()
+        password_hash = utils.generate_hash(password, password_salt)
+
+        user = UserAccount(username=username,
+                           password_hash=password_hash,
+                           password_salt=password_salt)
         db.session.add(user)
         db.session.commit()
 
@@ -122,9 +144,20 @@ def login():
         user = UserAccount.query.filter(UserAccount.username==username).first()
         if not user:
             return render_u(error='Username does not exist')
-            
+
         password = request.form.get('password')
-        if password != user.password:
+        if not password:
+            return render_u(error='No password entered')
+
+        try:
+            password = bytes(password)
+        except UnicodeEncodeError:
+            return render_u(error='Invalid characters used in password')
+
+        password_salt = user.password_salt
+        password_hash = utils.generate_hash(password, password_salt)
+
+        if password_hash != user.password_hash:
             return render_u(error='Username and password do not match')
 
         login_user(user)

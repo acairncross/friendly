@@ -19,10 +19,10 @@ DONE:
 TODO:
 ----
 
-- More validation of polls and votes
-- Start/end times of polls
+- ~~More validation of polls and votes~~
+- ~~Start/end times of polls~~
 - Vote counting
-- Make accounts (passwords) secure
+- ~~Make accounts (passwords) secure~~
 - Make forms/submissions secure (CSRF prevention)
 - Styling
 - Documentation

@@ -1,7 +1,9 @@
-import re
 import datetime
-import string
+import hashlib
+import hmac
 import random
+import re
+import string
 
 def parseDatetime(dt):
     expr = re.compile(r'(?P<year>\d{4})/'
@@ -19,5 +21,14 @@ def parseDatetime(dt):
 def generate_uvc():
     return ''.join([random.choice(string.ascii_uppercase) for i in range(10)])
 
+def get_now():
+    return datetime.datetime.utcnow()
+
 def shuffle(l):
     random.shuffle(l)
+
+def generate_salt():
+    return ''.join([random.choice(string.ascii_uppercase) for i in range(10)])
+
+def generate_hash(password, salt):
+    return hmac.new(salt, password, hashlib.sha256).hexdigest()
