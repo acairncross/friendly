@@ -3,6 +3,9 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
+{% if current_user.is_authenticated %}
+<p>Manage your polls <a href="{{ url_for('manage_polls') }}">here</a></p>
+{% endif %}
 {% if error %}
     <p>{{ error }}</p>
 {% endif %}

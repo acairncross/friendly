@@ -52,6 +52,8 @@ def vote():
             # Randomize the order of the choices (but not the polls)
             utils.shuffle(p.choices)
 
+        # Possible change for later: send the poll collection instead of the
+        # polls.
         return render_template('vote.html', uvc=uvc, ps=ps)
 
 @app.route('/submit_vote', methods=['POST'])
@@ -217,3 +219,10 @@ def create_poll():
         db.session.commit()
 
         return ('', 204)
+
+@app.route('/manage_polls', methods=['GET'])
+@login_required
+def manage_polls():
+    pcs = PollCollection.query.filter(
+        PollCollection.author==current_user)
+    return render_template('manage_polls.html', pcs=pcs)
