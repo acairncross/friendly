@@ -23,7 +23,7 @@
 {% block content %}
 {% for pc in pcs %}
     <li>
-        Poll id: {{ pc.id }}
+        {{ pc.title }}
         {% if pc.is_finished() and not pc.counted %}
             <button class="countVotesButton" data-pc-id="{{ pc.id }}">Count votes</button>
         {% endif %}

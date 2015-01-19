@@ -33,3 +33,6 @@ def generate_salt():
 
 def generate_hash(password, salt):
     return hmac.new(salt, password, hashlib.sha256).hexdigest()
+
+def is_alnum_or_underscore(s):
+    return True if re.match('^[a-zA-Z0-9_]$', s) else False

@@ -37,25 +37,41 @@
 
     function compileForm() {
 
+        var title = document.getElementById("title").value;
         var numVotes = parseInt(document.getElementById("numVotes").value);
         var start = document.getElementById("startDatetime").value;
         var end = document.getElementById("endDatetime").value;
 
+        // Use get() to get a regular object out of the jQ object
         var allPolls = $(".poll").map(function() {
+
             var $this = $(this);
             var question = $this.find(".question").val();
+
+            // Get all the candidates
             var allCandidates = $this.find(".candidate").map(function() {
                 return this.value;
             }).get();
+
+            // Filter out the empty candidates
             var candidates = $.grep(allCandidates, function(elem) { return elem; });
+
             return {question: question, candidates: candidates};
+
         }).get();
 
+        // Only take polls with a question and at least one candidate
         var polls = $.grep(allPolls, function(elem) {
             return elem.question && elem.candidates.length;
         });
 
-        return $.extend({}, {polls: polls, numVotes: numVotes, start: start, end: end});
+        return {
+            title: title,
+            polls: polls,
+            numVotes: numVotes,
+            start: start,
+            end: end
+        };
 
     }
 
@@ -81,6 +97,7 @@
 
 {% block content %}
 <input id="numPolls" type="hidden" value="0" />
+Title: <input id="title" /><br />
 No. votes: <input id="numVotes" /><br />
 Start: <input id="startDatetime" type="datetime" /><br />
 End: <input id="endDatetime" type="datetime" /><br />

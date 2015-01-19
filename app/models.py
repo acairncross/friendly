@@ -2,7 +2,7 @@ import json
 
 from app import db
 from exceptions import PasswordNotProvidedError, UsernameNotProvidedError
-from utils import generate_hash, generate_salt, get_now
+from utils import generate_hash, generate_salt, get_now, shuffle
 
 class UserAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,6 +48,7 @@ class UserAccount(db.Model):
 
 class PollCollection(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
     counted = db.Column(db.Boolean, default=False)
@@ -124,6 +125,9 @@ class Poll(db.Model):
 
         db.session.add(pr)
         db.session.commit()
+
+    def shuffle_candidates():
+        utils.shuffle(self.candidates)
 
 
 class PollResult(db.Model):

@@ -12,14 +12,17 @@ from models import (UserAccount, PollCollection, Poll, Candidate,
 from utils import (parseDatetime, generate_uvc, get_now, shuffle,
     generate_salt, generate_hash)
 
+
 @lm.user_loader
 def load_user(id):
     return UserAccount.query.get(int(id))
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         return render_template('index.html')
+
 
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
@@ -52,12 +55,10 @@ def vote():
 
         ps = pc.polls
         for p in ps:
-            # Randomize the order of the choices (but not the polls)
-            shuffle(p.candidates)
+            p.shuffle_candidates()
 
-        # Possible change for later: send the poll collection instead of the
-        # polls.
-        return render_template('vote.html', uvc=uvc, ps=ps)
+        return render_template('vote.html', uvc=uvc, pc=pc)
+
 
 @app.route('/submit_vote', methods=['POST'])
 def submit_vote():
@@ -92,6 +93,7 @@ def submit_vote():
     db.session.commit()
 
     return redirect(url_for('index'))
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -162,6 +164,7 @@ def login():
         next = request.args.get('next')
         return redirect(next) if next else redirect(url_for('index'))
 
+
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if request.method == 'GET':
@@ -169,6 +172,7 @@ def logout():
     elif request.method == 'POST':
         logout_user()
         return redirect(url_for('index'))
+
 
 @app.route('/create_poll', methods=['GET', 'POST'])
 @login_required
@@ -179,13 +183,15 @@ def create_poll():
         data = request.get_json()
 
         polls = data.get('polls')
+        title = data.get('title')
         num_votes = data.get('numVotes')
         start = data.get('start')
         end = data.get('end')
 
         num_polls = len(polls)
 
-        pc = PollCollection(start=parseDatetime(start),
+        pc = PollCollection(title=title,
+                            start=parseDatetime(start),
                             end=parseDatetime(end),
                             author_id=current_user.id)
         db.session.add(pc)
@@ -216,12 +222,14 @@ def create_poll():
 
         return ('', 204)
 
+
 @app.route('/manage_polls', methods=['GET'])
 @login_required
 def manage_polls():
     pcs = PollCollection.query.filter(
         PollCollection.author == current_user)
     return render_template('manage_polls.html', pcs=pcs)
+
 
 @app.route('/count_votes', methods=['POST'])
 @login_required

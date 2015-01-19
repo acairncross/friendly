@@ -59,8 +59,9 @@
 {% block title %}Vote{% endblock %}
 
 {% block content %}
+<h1>{{ pc.title }}</h1>
 <input id="uvc" type="hidden" value="{{ uvc }}" />
-{% for poll in ps %}
+{% for poll in pc.polls %}
     <div class="poll" data-poll-num="{{ poll.poll_num }}">
         <h2 class="question">{{ poll.question }}</h2>
         <div class="candidates">

@@ -8,20 +8,16 @@ ease of use.
 
 It is currently under development.
 
-DONE:
-----
-
-- Account creation
-- Poll creation
-- Voting
-
 
 TODO:
 ----
 
+- ~~Account creation~~
+- ~~Poll creation~~
+- ~~Voting~~
 - ~~More validation of polls and votes~~
 - ~~Start/end times of polls~~
-- Vote counting
+- ~~Vote counting~~
 - ~~Make accounts (passwords) secure~~
 - Make forms/submissions secure (CSRF prevention)
 - Styling
@@ -29,3 +25,4 @@ TODO:
 - Caching (database queries)
 - Tests
 - More admin features
+- Extra validation on the client side
