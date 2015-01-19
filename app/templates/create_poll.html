@@ -12,8 +12,8 @@
 
             $("#polls").append(rendered);
 
-            $(".addChoice").eq(pollNum).on("click", function() {
-                createNewChoice(pollNum);
+            $(".addCandidate").eq(pollNum).on("click", function() {
+                createNewCandidate(pollNum);
             });
 
             pollNumContainer.value++;
@@ -21,9 +21,9 @@
         });
     }
 
-    function createNewChoice(pollNum) {
-        var choice = $("<input class=\"choice\" /><br />");
-        $("#polls").children().eq(pollNum).append(choice);
+    function createNewCandidate(pollNum) {
+        var candidate = $("<input class=\"candidate\" /><br />");
+        $("#polls").children().eq(pollNum).append(candidate);
     }
 
     function submitForm() {
@@ -44,15 +44,15 @@
         var allPolls = $(".poll").map(function() {
             var $this = $(this);
             var question = $this.find(".question").val();
-            var allChoices = $this.find(".choice").map(function() {
+            var allCandidates = $this.find(".candidate").map(function() {
                 return this.value;
             }).get();
-            var choices = $.grep(allChoices, function(elem) { return elem; });
-            return {question: question, choices: choices};
+            var candidates = $.grep(allCandidates, function(elem) { return elem; });
+            return {question: question, candidates: candidates};
         }).get();
 
         var polls = $.grep(allPolls, function(elem) {
-            return elem.question && elem.choices.length;
+            return elem.question && elem.candidates.length;
         });
 
         return $.extend({}, {polls: polls, numVotes: numVotes, start: start, end: end});

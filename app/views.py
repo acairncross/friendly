@@ -3,11 +3,14 @@ from functools import partial
 from flask import redirect, render_template, request, url_for, make_response
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
+from sqlalchemy.exc import IntegrityError
 
 from app import app, db, lm
-from models import (UserAccount, PollCollection, Poll, Choice, PollCollectionVote,
-    PollVote, PollVoteChoice)
-import utils
+from exceptions import PasswordNotProvidedError, UsernameNotProvidedError
+from models import (UserAccount, PollCollection, Poll, Candidate,
+    PollCollectionVote, PollVote, PollVoteChoice)
+from utils import (parseDatetime, generate_uvc, get_now, shuffle,
+    generate_salt, generate_hash)
 
 @lm.user_loader
 def load_user(id):
@@ -41,7 +44,7 @@ def vote():
         pc = PollCollection.query.get(pcv.collection_id)
 
         # Check that the poll is currently open
-        now = utils.get_now()
+        now = get_now()
         if now < pc.start:
             return render(error='Voting for this poll has not started yet')
         elif pc.end < now:
@@ -50,7 +53,7 @@ def vote():
         ps = pc.polls
         for p in ps:
             # Randomize the order of the choices (but not the polls)
-            utils.shuffle(p.choices)
+            shuffle(p.candidates)
 
         # Possible change for later: send the poll collection instead of the
         # polls.
@@ -69,19 +72,19 @@ def submit_vote():
     pc = PollCollection.query.get(pcv.collection_id)
     ps = pc.polls
 
-    pvs = [PollVote(poll_id=p.id,
-                    pollcollvote_id=pcv.id)
-           for p in ps]
+    pvs = [ PollVote(poll_id=p.id,
+                     pollcollvote_id=pcv.id)
+            for p in ps ]
     db.session.add_all(pvs)
     db.session.commit()
 
-    css = [p.choices for p in ps]
+    css = [ p.candidates for p in ps ]
 
-    pvcs = [PollVoteChoice(choice_id=css[poll_num][choice_num].id,
-                           preference=preference,
-                           pollvote_id=pvs[poll_num].id)
-            for poll_num in range(num_polls)
-            for preference,choice_num in enumerate(choices[poll_num])]
+    pvcs = [ PollVoteChoice(candidate_id=css[poll_num][can_num].id,
+                            preference=preference,
+                            pollvote_id=pvs[poll_num].id)
+             for poll_num in range(num_polls)
+             for preference,can_num in enumerate(choices[poll_num]) ]
     db.session.add_all(pvcs)
     db.session.commit()
 
@@ -96,39 +99,32 @@ def signup():
         return render_template('signup.html')
     if request.method == 'POST':
         render = partial(render_template, 'signup.html')
-
         username = request.form.get('username')
-        if not username:
-            render(error='No username provided')
-
-        render_u = partial(render, username=username)
-
-        other_user = UserAccount.query.filter(
-            UserAccount.username==username).first()
-        if other_user:
-            return render_u(error='Username is already in use')
-
         password = request.form.get('password')
-        if not password:
-            return render_u(error='Password not provided')
 
         try:
-            password = bytes(password)
+            user = UserAccount(username=username, password=password)
+        except UsernameNotProvidedError:
+            return render(error='No username provided')
+        except PasswordNotProvidedError:
+            return render(error='Password not provided',
+                          username=username)
         except UnicodeEncodeError:
-            return render_u(error='Invalid characters used in password')
+            return render(error='Invalid characters used in password',
+                          username=username)
 
-        password_salt = utils.generate_salt()
-        password_hash = utils.generate_hash(password, password_salt)
-
-        user = UserAccount(username=username,
-                           password_hash=password_hash,
-                           password_salt=password_salt)
         db.session.add(user)
-        db.session.commit()
 
-        login_user(user)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return render(error='Username is already in use',
+                          username=username)
+        else:
+            login_user(user)
+            return render_template('index.html')
 
-        return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -157,10 +153,10 @@ def login():
             return render_u(error='Invalid characters used in password')
 
         password_salt = user.password_salt
-        password_hash = utils.generate_hash(password, password_salt)
+        password_hash = generate_hash(password, password_salt)
 
         if password_hash != user.password_hash:
-            return render_u(error='Username and password do not match')
+            return render_u(error='Password for this username is incorrect')
 
         login_user(user)
         next = request.args.get('next')
@@ -189,32 +185,32 @@ def create_poll():
 
         num_polls = len(polls)
 
-        pc = PollCollection(start=utils.parseDatetime(start),
-                            end=utils.parseDatetime(end),
+        pc = PollCollection(start=parseDatetime(start),
+                            end=parseDatetime(end),
                             author_id=current_user.id)
         db.session.add(pc)
         db.session.commit()
 
         # Generate UVCs
-        pcvs = [PollCollectionVote(uvc=utils.generate_uvc(),
-                                   cast=False,
-                                   collection_id=pc.id)
-                for i in range(num_votes)]
+        pcvs = [ PollCollectionVote(uvc=generate_uvc(),
+                                    cast=False,
+                                    collection_id=pc.id)
+                 for i in range(num_votes) ]
         db.session.add_all(pcvs)
         db.session.commit()
 
-        ps = [Poll(question=poll['question'],
-                   collection_id=pc.id,
-                   poll_num=poll_num)
-              for poll_num,poll in enumerate(polls)]
+        ps = [ Poll(question=poll['question'],
+                    collection_id=pc.id,
+                    poll_num=poll_num)
+               for poll_num,poll in enumerate(polls) ]
         db.session.add_all(ps)
         db.session.commit()
 
-        cs = [Choice(text=choice,
-                     poll_id=ps[poll_num].id,
-                     choice_num=choice_num)
-              for poll_num,poll in enumerate(polls)
-              for choice_num,choice in enumerate(poll['choices'])]
+        cs = [ Candidate(text=can,
+                         poll_id=ps[poll_num].id,
+                         candidate_num=can_num)
+               for poll_num,poll in enumerate(polls)
+               for can_num,can in enumerate(poll['candidates']) ]
         db.session.add_all(cs)
         db.session.commit()
 
@@ -224,5 +220,20 @@ def create_poll():
 @login_required
 def manage_polls():
     pcs = PollCollection.query.filter(
-        PollCollection.author==current_user)
+        PollCollection.author == current_user)
     return render_template('manage_polls.html', pcs=pcs)
+
+@app.route('/count_votes', methods=['POST'])
+@login_required
+def count_votes():
+    pc_id = request.form.get('pcId')
+    
+    if not pc_id:
+        return ('', 204)
+
+    pc = PollCollection.query.get(pc_id)
+    pc.count_votes()
+
+    app.logger.debug(pc_id)
+
+    return ('', 204)

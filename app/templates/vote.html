@@ -25,7 +25,7 @@
             var $this = $(this);
             var pollNum = parseInt($this.data("poll-num"));
             var choices = $this.find(".included").children().map(function() {
-                return parseInt($(this).data("choice-num"));
+                return parseInt($(this).data("candidate-num"));
             }).get();
             return {pollNum: pollNum, choices: choices};
         }).get();
@@ -63,12 +63,12 @@
 {% for poll in ps %}
     <div class="poll" data-poll-num="{{ poll.poll_num }}">
         <h2 class="question">{{ poll.question }}</h2>
-        <div class="choices">
+        <div class="candidates">
             <ul class="sortable included">
             </ul>
             <ul class="sortable excluded">
-            {% for choice in poll.choices %}
-                <li data-choice-num="{{ choice.choice_num }}">{{ choice.text }}</li>
+            {% for can in poll.candidates %}
+                <li data-candidate-num="{{ can.candidate_num }}">{{ can.text }}</li>
             {% endfor %}
             </ul>
         </div>

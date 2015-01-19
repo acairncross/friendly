@@ -1,10 +1,33 @@
 {% extends "base.html" %}
 
+{% block script %}
+<script>
+    $(function() {
+
+        $(".countVotesButton").on("click", function() {
+            var $this = $(this);
+            var data = { pcId: parseInt($this.data("pc-id")) };
+            $.post(
+                "{{ url_for('count_votes') }}",
+                data,
+                function() { console.log("SUCCESS"); }
+            );
+        });
+
+    });
+</script>
+{% endblock %}
+
 {% block title %}Manage polls{% endblock %}
 
 {% block content %}
 {% for pc in pcs %}
-    <li>Poll id: {{ pc.id }}</li>
+    <li>
+        Poll id: {{ pc.id }}
+        {% if pc.is_finished() and not pc.counted %}
+            <button class="countVotesButton" data-pc-id="{{ pc.id }}">Count votes</button>
+        {% endif %}
+    </li>
 {% endfor %}
 <a href="{{ url_for('create_poll') }}">Create a new poll</a>
 {% endblock %}
