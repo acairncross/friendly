@@ -9,8 +9,8 @@ from app import app, db, lm
 from exceptions import PasswordNotProvidedError, UsernameNotProvidedError
 from models import (UserAccount, PollCollection, Poll, Candidate,
     PollCollectionVote, PollVote, PollVoteChoice)
-from utils import (parseDatetime, generate_uvc, get_now, shuffle,
-    generate_salt, generate_hash)
+from utils import (parseDatetime, generate_uvc, get_now, generate_salt,
+    generate_hash)
 
 
 @lm.user_loader
@@ -226,8 +226,10 @@ def create_poll():
 @app.route('/manage_polls', methods=['GET'])
 @login_required
 def manage_polls():
-    pcs = PollCollection.query.filter(
-        PollCollection.author == current_user)
+    pcs = (PollCollection.query
+          .filter(PollCollection.author == current_user)
+          .order_by(PollCollection.start.desc())
+          )
     return render_template('manage_polls.html', pcs=pcs)
 
 

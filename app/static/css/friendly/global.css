@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#header {
+    background-color: pink;
+    float: left;
+    padding: 25px 25px;
+    width: 100%;
+}
+
+#content {
+    float: left;
+    padding: 25px 0;
+    width: 100%;
+}
+
+.wrap {
+    margin: auto auto;
+    position: relative;
+    width: 60%;
+}

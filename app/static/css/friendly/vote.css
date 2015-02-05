@@ -1,4 +1,20 @@
+.poll {
+    margin: 25px 0;
+}
+
 ul {
     padding: 10px;
     background-color: #eee;
+}
+
+.candidates {
+    line-height: 30px;
+}
+
+.sortable.included {
+    background-color: pink;
+}
+
+.sortable:hover {
+    cursor: grab;
 }

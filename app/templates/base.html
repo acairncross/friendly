@@ -4,6 +4,7 @@
 
     <head>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lib/reset.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friendly/global.css') }}" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/lib/jquery.datetimepicker.css') }}" />
         <!--
         <script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
@@ -18,7 +19,17 @@
     </head>
 
     <body>
-        
+
+        <div id="header">
+            <div class="wrap">
+                <h1>friendlyvote</h1>
+                <h2>It's great</h2>
+            </div>
+        </div>
+
+        <div id="content">
+            <div class="wrap">
+
         {% if current_user.is_authenticated() %}
             <p>You are logged in as {{ current_user.username }}</p>
         {% else %}
@@ -28,6 +39,9 @@
         {% block content %}
         Base content
         {% endblock %}
+
+            </div>
+        </div>
 
     </body>
 

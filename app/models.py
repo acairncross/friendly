@@ -126,8 +126,8 @@ class Poll(db.Model):
         db.session.add(pr)
         db.session.commit()
 
-    def shuffle_candidates():
-        utils.shuffle(self.candidates)
+    def shuffle_candidates(self):
+        shuffle(self.candidates)
 
 
 class PollResult(db.Model):
