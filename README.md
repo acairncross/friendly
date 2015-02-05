@@ -26,3 +26,4 @@ TODO:
 - Tests
 - More admin features
 - Extra validation on the client side
+- Count votes via cronjobs rather than (or in addition to) user requests
