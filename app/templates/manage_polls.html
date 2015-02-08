@@ -24,7 +24,7 @@
 {% for pc in pcs %}
     <li>
         {{ pc.title }}
-        <a href="{{ url_for('view_uvcs', pc=pc.id) }}">View UVCs</a>
+        <a href="{{ url_for('view_uvcs', pc_id=pc.id) }}">View UVCs</a>
         {% if pc.is_finished() and not pc.counted %}
             <button class="countVotesButton" data-pc-id="{{ pc.id }}">Count votes</button>
         {% endif %}

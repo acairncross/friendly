@@ -1,7 +1,7 @@
 from functools import partial
 
-from flask import redirect, render_template, Response, request, url_for,
-    make_response
+from flask import (redirect, render_template, Response, request, url_for,
+    make_response)
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
 from sqlalchemy.exc import IntegrityError
@@ -234,17 +234,9 @@ def manage_polls():
     return render_template('manage_polls.html', pcs=pcs)
 
 
-@app.route('/uvcs')
+@app.route('/uvcs/<int:pc_id>')
 @login_required
-def view_uvcs():
-    pc_id = request.args.get('pc')
-    print pc_id
-
-    try:
-        pc_id = int(pc_id)
-    except ValueError:
-        return ('', 404)
-
+def view_uvcs(pc_id):
     pc = PollCollection.query.get(pc_id)
     pcvs = pc.votes
     uvcs = [ pcv.uvc for pcv in pcvs ]
