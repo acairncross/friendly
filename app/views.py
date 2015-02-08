@@ -1,6 +1,7 @@
 from functools import partial
 
-from flask import redirect, render_template, request, url_for, make_response
+from flask import redirect, render_template, Response, request, url_for,
+    make_response
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
 from sqlalchemy.exc import IntegrityError
@@ -247,7 +248,7 @@ def view_uvcs():
     pc = PollCollection.query.get(pc_id)
     pcvs = pc.votes
     uvcs = [ pcv.uvc for pcv in pcvs ]
-    return render_template('uvcs.html', uvcs=uvcs)
+    return Response('\n'.join(uvcs), content_type='text/plain')
 
 
 @app.route('/count_votes', methods=['POST'])
