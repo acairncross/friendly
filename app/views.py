@@ -27,7 +27,7 @@ def index():
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
     if request.method == 'GET':
-        return render_remplate('index.html')
+        return render_template('index.html')
     elif request.method == 'POST':
         render = partial(render_template, 'index.html')
 
@@ -231,6 +231,23 @@ def manage_polls():
           .order_by(PollCollection.start.desc())
           )
     return render_template('manage_polls.html', pcs=pcs)
+
+
+@app.route('/uvcs')
+@login_required
+def view_uvcs():
+    pc_id = request.args.get('pc')
+    print pc_id
+
+    try:
+        pc_id = int(pc_id)
+    except ValueError:
+        return ('', 404)
+
+    pc = PollCollection.query.get(pc_id)
+    pcvs = pc.votes
+    uvcs = [ pcv.uvc for pcv in pcvs ]
+    return render_template('uvcs.html', uvcs=uvcs)
 
 
 @app.route('/count_votes', methods=['POST'])

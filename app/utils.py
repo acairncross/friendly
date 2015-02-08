@@ -20,7 +20,8 @@ def parseDatetime(dt):
                              int(m.group('minute')))
 
 def generate_uvc():
-    return ''.join([random.choice(string.ascii_uppercase) for i in range(10)])
+    return ''.join([ random.choice(string.ascii_uppercase)
+                     for i in range(16) ])
 
 def get_now():
     return datetime.datetime.utcnow()
@@ -29,7 +30,8 @@ def shuffle(l):
     random.shuffle(l)
 
 def generate_salt():
-    return ''.join([random.choice(string.ascii_uppercase) for i in range(10)])
+    return ''.join([ random.choice(string.ascii_uppercase)
+                     for i in range(16) ])
 
 def generate_hash(password, salt):
     return hmac.new(salt, password, hashlib.sha256).hexdigest()

@@ -1,17 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Index{% endblock %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friendly/index.css') }}" />
+{% endblock %}
+
+{% block script %}
+<script>
+    $(function() {
+
+        var $window = $(window);
+        resizeHalves();
+
+        $(window).resize(resizeHalves);
+
+        function resizeHalves() {
+            var winHeight = $window.height();
+            $("#header").innerHeight(1*winHeight/3);
+            $("#content").innerHeight(winHeight/2);
+        }
+
+    });
+</script>
+{% endblock %}
+
+{% block title %}Home{% endblock %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
+
+{% if current_user.is_authenticated() %}
 <p>Manage your polls <a href="{{ url_for('manage_polls') }}">here</a></p>
 {% endif %}
-{% if error %}
-    <p>{{ error }}</p>
-{% endif %}
-Enter your Unique Voting Code:
+
+<p>Enter your Unique Voting Code:</p>
 <form method="POST" action="{{ url_for('vote') }}">
     <input name="uvc" maxlength="16" />
-    <input type="submit" />
+    <input type="submit" value="Go" />
 </form>
+
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+
 {% endblock %}
