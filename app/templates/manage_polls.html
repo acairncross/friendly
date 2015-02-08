@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friendly/manage_polls.css') }}" />
+{% endblock %}
+
 {% block script %}
 <script>
     $(function() {
@@ -21,14 +25,18 @@
 {% block title %}Manage polls{% endblock %}
 
 {% block content %}
+<table id="menu">
 {% for pc in pcs %}
-    <li>
-        {{ pc.title }}
-        <a href="{{ url_for('view_uvcs', pc_id=pc.id) }}">View UVCs</a>
-        {% if pc.is_finished() and not pc.counted %}
-            <button class="countVotesButton" data-pc-id="{{ pc.id }}">Count votes</button>
-        {% endif %}
-    </li>
+    <tr>
+        <td>{{ pc.title }}</td>
+        <td><a href="{{ url_for('view_uvcs', pc_id=pc.id) }}">View UVCs</a></td>
+        <td>
+            {% if pc.is_finished() and not pc.counted %}
+                <button class="countVotesButton" data-pc-id="{{ pc.id }}">Count votes</button>
+            {% endif %}
+        </td>
+    </tr>
 {% endfor %}
+</table>
 <a href="{{ url_for('create_poll') }}">Create a new poll</a>
 {% endblock %}
