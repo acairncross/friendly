@@ -5,14 +5,14 @@
     function createNewPoll() {
         $.get("{{ url_for('static', filename='templates/poll_template.mustache') }}", function(template) {
 
-            var pollNumContainer = document.getElementById("numPolls");
+            var pollNumContainer = document.getElementById("num-polls");
             var pollNum = parseInt(pollNumContainer.value);
 
             var rendered = Mustache.render(template, {pollNum: pollNum});
 
             $("#polls").append(rendered);
 
-            $(".addCandidate").eq(pollNum).on("click", function() {
+            $(".add-candidate").eq(pollNum).on("click", function() {
                 createNewCandidate(pollNum);
             });
 
@@ -38,9 +38,9 @@
     function compileForm() {
 
         var title = document.getElementById("title").value;
-        var numVotes = parseInt(document.getElementById("numVotes").value);
-        var start = document.getElementById("startDatetime").value;
-        var end = document.getElementById("endDatetime").value;
+        var numVotes = parseInt(document.getElementById("num-votes").value);
+        var start = document.getElementById("start-datetime").value;
+        var end = document.getElementById("end-datetime").value;
 
         // Use get() to get a regular object out of the jQ object
         var allPolls = $(".poll").map(function() {
@@ -79,11 +79,11 @@
 
     $(function() {
 
-        $("#startDatetime").datetimepicker();
-        $("#endDatetime").datetimepicker();
+        $("#start-datetime").datetimepicker();
+        $("#end-datetime").datetimepicker();
         createNewPoll();
 
-        $("#addPoll").on("click", function() {
+        $("#add-poll").on("click", function() {
             createNewPoll();
         });
 
@@ -98,12 +98,12 @@
 {% block title %}Create Poll{% endblock %}
 
 {% block content %}
-<input id="numPolls" type="hidden" value="0" />
+<input id="num-polls" type="hidden" value="0" />
 Title: <input id="title" /><br />
-No. votes: <input id="numVotes" /><br />
-Start: <input id="startDatetime" type="datetime" /><br />
-End: <input id="endDatetime" type="datetime" /><br />
-<button type="button" id="addPoll">Add poll</button><br />
+No. votes: <input id="num-votes" /><br />
+Start: <input id="start-datetime" type="datetime" /><br />
+End: <input id="end-datetime" type="datetime" /><br />
+<button type="button" id="add-poll">Add poll</button><br />
 
 <div id="polls"></div>
 

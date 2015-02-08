@@ -3,10 +3,10 @@
 {% block script %}
 {% endblock %}
 
-{% block title %}
+{% block title %}Result: {{ pc.title }}{% endblock %}
 
 {% block content %}
 {% for poll in pc.polls %}
-    <div class="pollResult">{{ poll }}: {{ poll.result }}</div>
+    <div class="poll-result">{{ poll }}: {{ poll.result }}</div>
 {% endfor %}
 {% endblock %}

@@ -8,7 +8,7 @@
 <script>
     $(function() {
 
-        $(".countVotesButton").on("click", function() {
+        $(".count-votes-button").on("click", function() {
             var $this = $(this);
             var data = { pcId: parseInt($this.data("pc-id")) };
             $.post(
@@ -32,7 +32,12 @@
         <td><a href="{{ url_for('view_uvcs', pc_id=pc.id) }}">View UVCs</a></td>
         <td>
             {% if pc.is_finished() and not pc.counted %}
-                <button class="countVotesButton" data-pc-id="{{ pc.id }}">Count votes</button>
+                <button class="count-votes-button" data-pc-id="{{ pc.id }}">Count votes</button>
+            {% endif %}
+        </td>
+        <td>
+            {% if pc.counted %}
+                <a href="{{ url_for('view_result', pc_id=pc.id) }}">View result</a>
             {% endif %}
         </td>
     </tr>

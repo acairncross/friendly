@@ -2,14 +2,14 @@
     function createNewPoll() {
         $.get("{{ url_for('static', filename='templates/poll_template.mustache') }}", function(template) {
 
-            var pollNumContainer = document.getElementById('numPolls');
+            var pollNumContainer = document.getElementById('num-polls');
             var pollNum = pollNumContainer.value;
 
             var rendered = Mustache.render(template, {pollNum: pollNum});
 
             $("#polls").append(rendered);
 
-            $("#add_choice" + pollNum).on("click", function() {
+            $("#add-choice" + pollNum).on("click", function() {
                 createNewChoice(pollNum);
             });
 
@@ -28,11 +28,11 @@
 
     $(function() {
 
-        $("#startDatetime").datetimepicker();
-        $("#endDatetime").datetimepicker();
+        $("#start-datetime").datetimepicker();
+        $("#end-datetime").datetimepicker();
         createNewPoll();
 
-        $("#addPoll").on("click", function(e) {
+        $("#add-poll").on("click", function(e) {
             createNewPoll();
         });
 
