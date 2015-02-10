@@ -1,3 +1,4 @@
+from collections import defaultdict
 import json
 
 from app import db
@@ -95,13 +96,13 @@ class Poll(db.Model):
         result = []
 
         while pvs:
-            cur_result = { can.id: 0 for can in self.candidates }
+            cur_result = defaultdict(int)
             for pv in pvs:
                 if len(pv.choices):
                     cur_result[pv.choices[0].candidate_id] += 1
             result.append(cur_result)
-            majority_size = len(pvs)/2
-            if any([ n > majority_size for n in cur_result.values() ]):
+            majority_size = (len(pvs) + 1)/2
+            if any([ n >= majority_size for n in cur_result.values() ]):
                 break
             min_votes = min(cur_result.values())
             least_popular = [ can_id for can_id in cur_result

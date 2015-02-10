@@ -20,7 +20,7 @@ TODO:
 - ~~Vote counting~~
 - ~~Make accounts (passwords) secure~~
 - Make forms/submissions secure (CSRF prevention)
-- Styling
+- ~~Styling~~
 - Documentation
 - Caching (database queries)
 - Tests

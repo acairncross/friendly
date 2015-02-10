@@ -65,8 +65,8 @@
     <div class="poll" data-poll-num="{{ poll.poll_num }}">
         <h3 class="question">{{ poll.question }}</h2>
         <div class="candidates">
-            <ul class="sortable included">
-            </ul>
+            <ol class="sortable included">
+            </ol>
             <ul class="sortable excluded">
             {% for can in poll.candidates %}
                 <li data-candidate-num="{{ can.candidate_num }}">{{ can.text }}</li>

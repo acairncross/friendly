@@ -2,9 +2,9 @@
     margin: 25px 0;
 }
 
-ul {
+ol, ul {
     padding: 10px;
-    background-color: #eee;
+    background-color: #eeb;
 }
 
 li {
