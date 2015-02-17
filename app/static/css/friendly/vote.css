@@ -2,13 +2,26 @@
     margin: 25px 0;
 }
 
+h2 {
+    margin: 25px 0;
+}
+
+h3 {
+    margin: 25px 0;
+}
+
 ol, ul {
-    padding: 10px;
+    padding: 25px;
     background-color: #eeb;
 }
 
 li {
     padding: 10px;
+}
+
+#info {
+    border: 1px dashed gold;
+    padding: 5px;
 }
 
 .candidates {

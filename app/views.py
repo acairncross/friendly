@@ -45,6 +45,9 @@ def vote():
         if not pcv:
             return render(error='UVC does not exist')
 
+        if pcv.cast:
+            return render(error='You have already cast your vote')
+
         pc = PollCollection.query.get(pcv.collection_id)
 
         # Check that the poll is currently open

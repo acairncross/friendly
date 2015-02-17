@@ -12,7 +12,9 @@
         $.ajax("{{ url_for('submit_vote') }}", {
             contentType: "application/json",
             data: JSON.stringify(compileForm()),
-            success: function() { window.location.href = "{{ url_for('index') }}";},
+            success: function() {
+                alert("Your vote has been submitted"); window.location.href = "{{ url_for('index') }}";
+            },
             type: "POST"
         });
     }
@@ -59,6 +61,7 @@
 {% block title %}Vote{% endblock %}
 
 {% block content %}
+<p id="info">Drag the candidates you want to vote for into the pink area.</p>
 <h2>{{ pc.title }}</h1>
 <input id="uvc" type="hidden" value="{{ uvc }}" />
 {% for poll in pc.polls %}
