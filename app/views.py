@@ -265,5 +265,6 @@ def count_votes():
 @login_required
 def view_result(pc_id):
     pc = PollCollection.query.get(pc_id)
+    # return render_template('poll_collection_result.html', pc=pc)
     return Response(render_template('poll_collection_result.txt', pc=pc),
                     content_type='text/plain')
