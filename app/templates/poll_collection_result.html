@@ -3,6 +3,6 @@ Results for: {{ pc.title }}
 
 {% for poll in pc.polls %}
 Poll: {{ poll.question }}
-{{ poll.result.first().get_result() }}
+{{ poll.result.get_result() }}
 {% endfor %}
 </pre>

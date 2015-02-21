@@ -54,7 +54,7 @@ class PollCollection(db.Model):
     end = db.Column(db.DateTime)
     counted = db.Column(db.Boolean, default=False)
 
-    polls = db.relationship('Poll', backref='collection', order_by='Poll.poll_num', lazy='dynamic')
+    polls = db.relationship('Poll', backref='collection', order_by='Poll.poll_num')
     votes = db.relationship('PollCollectionVote')
 
     author_id = db.Column(db.Integer, db.ForeignKey('user_account.id'))
@@ -82,7 +82,7 @@ class Poll(db.Model):
     candidates = db.relationship('Candidate',
                                  backref='poll',
                                  order_by='Candidate.candidate_num')
-    result = db.relationship('PollResult', lazy='dynamic')
+    result = db.relationship('PollResult', uselist=False)
     votes = db.relationship('PollVote')
 
     collection_id = db.Column(db.Integer, db.ForeignKey('poll_collection.id'))

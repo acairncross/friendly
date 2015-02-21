@@ -5,6 +5,7 @@ from flask import (redirect, render_template, Response, request, url_for,
 from flask.ext.login import (login_user, logout_user, current_user,
     login_required)
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
 from app import app, db, lm
 from exceptions import PasswordNotProvidedError, UsernameNotProvidedError
@@ -264,7 +265,6 @@ def count_votes():
 @app.route('/result/<int:pc_id>')
 @login_required
 def view_result(pc_id):
-    pc = PollCollection.query.get(pc_id)
-    # return render_template('poll_collection_result.html', pc=pc)
+    pc = PollCollection.query.options(joinedload('polls').joinedload('result')).get(pc_id)
     return Response(render_template('poll_collection_result.txt', pc=pc),
                     content_type='text/plain')
