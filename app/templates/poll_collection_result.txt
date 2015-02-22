@@ -2,5 +2,8 @@ Results for: {{ pc.title }}
 
 {% for poll in pc.polls %}
 Poll: {{ poll.question }}
-{{ poll.result.get_result() }}
+{# {{ poll.result.get_result() }} #}
+{% for stage in poll.result.get_result() %}
+{{ stage }}
+{% endfor %}
 {% endfor %}

@@ -36,7 +36,10 @@ def vote():
         uvc = request.form.get('uvc')
 
         if not uvc:
-            return render(error='No UVC entered')
+            return render(error='You didn\'t enter a UVC')
+
+        if len(uvc) < 16:
+            return render(error='Your UVC should be 16 characters long')
 
         uvc = uvc.upper()
 
@@ -44,7 +47,7 @@ def vote():
             PollCollectionVote.uvc == uvc).first()
 
         if not pcv:
-            return render(error='UVC does not exist')
+            return render(error='The UVC you entered does not exist')
 
         if pcv.cast:
             return render(error='You have already cast your vote')
@@ -266,5 +269,6 @@ def count_votes():
 @login_required
 def view_result(pc_id):
     pc = PollCollection.query.options(joinedload('polls').joinedload('result')).get(pc_id)
-    return Response(render_template('poll_collection_result.txt', pc=pc),
-                    content_type='text/plain')
+    return render_template('poll_collection_result.html', pc=pc)
+    # return Response(render_template('poll_collection_result.txt', pc=pc),
+    #                 content_type='text/plain')

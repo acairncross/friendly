@@ -142,7 +142,8 @@ class PollResult(db.Model):
         self.result = json.dumps(result)
 
     def get_result(self):
-        return json.loads(self.result)
+        return [ { int(k):v for k,v in stage.iteritems() }
+                 for stage in json.loads(self.result) ]
 
     def set_result(self, result):
         self.result = json.dumps(result)

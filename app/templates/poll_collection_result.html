@@ -2,7 +2,13 @@
 Results for: {{ pc.title }}
 
 {% for poll in pc.polls %}
-Poll: {{ poll.question }}
-{{ poll.result.get_result() }}
+    Poll: {{ poll.question }}
+    {{ poll.result.get_result() }}
+    {% for can in poll.candidates %}
+        {{ can.text }}
+    {% endfor %}
+    {% for stage in poll.result.get_result() %}
+        {{ stage }}
+    {% endfor %}
 {% endfor %}
 </pre>
