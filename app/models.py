@@ -141,8 +141,19 @@ class PollResult(db.Model):
         self.poll_id = poll_id
         self.result = json.dumps(result)
 
-    def get_result(self):
+    def get_result_id(self):
+        """Gets the results of a poll with candidate ids as keys to each
+        dict."""
+        # dict keys all get turned into strings when dumped into json, so we
+        # need to turn them back into ints.
         return [ { int(k):v for k,v in stage.iteritems() }
+                 for stage in json.loads(self.result) ]
+
+    def get_result_obj(self):
+        """Gets the results of a poll with candidate objects as keys to each
+        dict."""
+        # Maybe use an OrderedDict?
+        return [ { Candidate.query.get(int(k)):v for k,v in stage.iteritems() }
                  for stage in json.loads(self.result) ]
 
     def set_result(self, result):

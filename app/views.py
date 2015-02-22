@@ -268,7 +268,11 @@ def count_votes():
 @app.route('/result/<int:pc_id>')
 @login_required
 def view_result(pc_id):
-    pc = PollCollection.query.options(joinedload('polls').joinedload('result')).get(pc_id)
+    # Not 100% sure how the joinedloads (and non-joinedloads) work, but they
+    # seem to be necessary to access the attributes of the result objects.
+    pc = PollCollection.query.options(
+        joinedload('polls').joinedload('result')
+    ).get(pc_id)
     return render_template('poll_collection_result.html', pc=pc)
     # return Response(render_template('poll_collection_result.txt', pc=pc),
     #                 content_type='text/plain')
