@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import json
 
 from app import db
@@ -151,10 +151,12 @@ class PollResult(db.Model):
 
     def get_result_obj(self):
         """Gets the results of a poll with candidate objects as keys to each
-        dict."""
-        # Maybe use an OrderedDict?
-        return [ { Candidate.query.get(int(k)):v for k,v in stage.iteritems() }
-                 for stage in json.loads(self.result) ]
+        dict. Useful for when you want to get human readable information from
+        the results."""
+        return [ OrderedDict([ (Candidate.query.get(int(k)),v)
+                               for k,v in stage.iteritems() ])
+                 for stage in json.loads(self.result,
+                                         object_pairs_hook=OrderedDict) ]
 
     def set_result(self, result):
         self.result = json.dumps(result)
