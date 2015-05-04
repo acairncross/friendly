@@ -4,6 +4,11 @@ Results for: {{ pc.title }}
 {% for poll in pc.polls %}
     Poll: {{ poll.question }}
     {% for stage in poll.result.get_result_obj() %}
+        {% if not loop.first %}
+        Since there was no majority in the previous round, the least popular
+        candidate's votes have been eliminated and the votes have been
+        recounted.
+        {% endif %}
         Stage {{ loop.index }}
         {% for can,votes in stage.iteritems() %}
             {{ can.text }}: {{ votes }}

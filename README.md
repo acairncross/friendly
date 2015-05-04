@@ -15,7 +15,7 @@ TODO:
 - ~~Account creation~~
 - ~~Poll creation~~
 - ~~Voting~~
-- ~~More validation of polls and votes~~
+- More validation of polls and votes
 - ~~Start/end times of polls~~
 - ~~Vote counting~~
 - ~~Make accounts (passwords) secure~~
@@ -24,5 +24,8 @@ TODO:
 - Documentation
 - Caching (database queries)
 - Tests
+- Logging
 - More admin features
-- Extra validation on the client side
+- ~~Extra validation on the client side (not really necessary actually, but do
+need more validation on the server)~~
+- Automatically count votes (cron job or task queue)

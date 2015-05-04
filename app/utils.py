@@ -24,7 +24,7 @@ def generate_uvc():
                      for i in range(16) ])
 
 def get_now():
-    return datetime.datetime.utcnow()
+    return datetime.datetime.now()
 
 def shuffle(l):
     random.shuffle(l)
