@@ -19,12 +19,14 @@ table {
     <h2>Poll: {{ poll.question }}</h2>
     <table>
         <tr>
+            <th>#</th>
             {% for can in poll.candidates %}
             <th>{{ loop.index }}</th>
             {% endfor %}
         </tr>
         {% for pv in poll.votes %}
         <tr>
+            <td>{{ loop.index }}</td>
             {% for can in poll.candidates %}
             <td>
                 {% if pv.choices|length > loop.index0 %}
