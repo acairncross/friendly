@@ -265,6 +265,14 @@ def count_votes():
 
     return ('', 204)
 
+
+@app.route('/display_votes/<int:pc_id>')
+@login_required
+def display_votes(pc_id):
+    pc = PollCollection.query.get(pc_id)
+    pcvs = pc.votes
+    return render_template('poll_collection_votes.html', pc=pc)
+
 @app.route('/result/<int:pc_id>')
 @login_required
 def view_result(pc_id):

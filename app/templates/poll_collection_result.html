@@ -1,19 +1,47 @@
-<pre>
-Results for: {{ pc.title }}
+<!doctype html>
+
+<html lang="en">
+
+<head>
+<style>
+table {
+    border-spacing: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Results for: {{ pc.title }}</h1>
 
 {% for poll in pc.polls %}
-    Poll: {{ poll.question }}
+<div>
+    <h2>Poll: {{ poll.question }}</h2>
     {% for stage in poll.result.get_result_obj() %}
         {% if not loop.first %}
+        <p>
         Since there was no majority in the previous round, the least popular
-        candidate's votes have been eliminated and the votes have been
+        candidate(s)'s votes have been eliminated and the votes have been
         recounted.
+        </p>
         {% endif %}
-        Stage {{ loop.index }}
+        <h3>Stage {{ loop.index }}</h3>
+        <table>
+            <tr>
+                <th>Candidate</th>
+                <th>Votes</th>
+            </tr>
         {% for can,votes in stage.iteritems() %}
-            {{ can.text }}: {{ votes }}
+            <tr>
+                <td>{{ can.text }}</td>
+                <td>{{ votes }}</td>
+            </tr>
         {% endfor %}
-        {# {{ stage }} #}
+        </table>
     {% endfor %}
+</div>
 {% endfor %}
-</pre>
+
+</body>
+
+</html>

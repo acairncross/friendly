@@ -30,6 +30,7 @@
     <tr>
         <td>{{ pc.title }}</td>
         <td><a href="{{ url_for('view_uvcs', pc_id=pc.id) }}">View UVCs</a></td>
+        <td><a href="{{ url_for('display_votes', pc_id=pc.id) }}">Display votes</a</td>
         <td>
             {% if pc.is_finished() and not pc.counted %}
                 <button class="count-votes-button" data-pc-id="{{ pc.id }}">Count votes</button>

@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+<style>
+table {
+    border-spacing: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Votes for: {{ pc.title }}</h1>
+
+{% for poll in pc.polls %}
+<div>
+    <h2>Poll: {{ poll.question }}</h2>
+    <table>
+        <tr>
+            {% for can in poll.candidates %}
+            <th>{{ loop.index }}</th>
+            {% endfor %}
+        </tr>
+        {% for pv in poll.votes %}
+        <tr>
+            {% for can in poll.candidates %}
+            <td>
+                {% if pv.choices|length > loop.index0 %}
+                    {{ pv.choices[loop.index0].choice.text }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endfor %}
+
+</body>
+
+</html>
+
