@@ -73,6 +73,11 @@ class PollCollection(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def num_votes_cast(self):
+        return (PollCollectionVote.query
+            .filter(PollCollectionVote.collection_id == self.id)
+            .filter(PollCollectionVote.cast == True).count())
+
 
 class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)

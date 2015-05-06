@@ -1,4 +1,4 @@
 *.swp
 *.pyc
-activate
 venv/*
+ssl/*

@@ -40,6 +40,9 @@
                 <a href="{{ url_for('view_result', pc_id=pc.id) }}">View result</a>
             {% endif %}
         </td>
+        <td>
+          {{ pc.num_votes_cast() }} / {{ pc.votes | length }} votes cast
+        </td>
     </tr>
 {% endfor %}
 </table>
